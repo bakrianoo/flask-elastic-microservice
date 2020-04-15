@@ -1,0 +1,104 @@
+swagger: '2.0'
+info:
+  title: {{ title }}
+  description: Wuzzuf Technical Task MicroService
+  version: "1.0"
+consumes:
+  - application/json
+produces:
+  - application/json
+security:
+  # enable OAuth protection for all REST endpoints
+  # (set TOKENINFO_URL environment variable to activate it)
+  - oauth2: [uid]
+
+basePath: /v1.0
+tags:
+  - name: "review"
+    description: "Review Analyzing/Indexing API Services"
+schemes:
+  - "http"
+paths:
+  /review_tone_analyzer/{hotel_name}:
+    get:
+      tags: 
+        - "review"
+      operationId: api.review.review_instance.analyze_reviews_tones
+      summary: Fetch the normalized tones for a specific hotel reviews using of Watson Tone Analyzer API
+      parameters:
+      - name: hotel_name
+        in: path
+        description: Targeted hotel name
+        type: string
+        default: ""
+        required: true
+      responses:
+        200:
+          description: Return normalized tones
+          schema:
+            $ref: '#/definitions/HotelTones'
+  /index_hotel/{hotel_name}:
+    get:
+      tags: 
+        - "review"
+      summary: "Index Hotels data and their normalized tones scores"
+      operationId: "api.elastic.elastic_instance.index_hotel_reviews"
+      produces:
+      - "application/json"
+      parameters:
+      - name: hotel_name
+        in: path
+        description: Targeted hotel name
+        type: string
+        default: ""
+        required: true
+      
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "array"
+        400:
+          description: "Invalid status value"
+  /index_hotel:
+    get:
+      tags: 
+        - "review"
+      summary: "Index Hotels data and their normalized tones scores"
+      operationId: "api.elastic.elastic_instance.index_all_hotel_reviews"
+      produces:
+      - "application/json"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "array"
+        400:
+          description: "Invalid status value"
+
+definitions:
+  HotelTones:
+    type: object
+    required:
+      - name
+      - tones
+    properties:
+      name:
+        type: string
+        description: Hotel name
+        example: "Cairo Hotel"
+        minLength: 1
+        maxLength: 100
+      tones:
+        type: object
+        description: Normalized score for each found tone
+        example: "{'joy':0.72, 'sad':0.15}"
+        minLength: 1
+
+securityDefinitions:
+  oauth2:
+    type: oauth2
+    flow: implicit
+    authorizationUrl: https://example.com/oauth2/dialog
+    scopes:
+      uid: The user unique ID to access this service.

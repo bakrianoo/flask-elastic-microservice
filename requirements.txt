@@ -23,6 +23,6 @@ PyYAML==3.12
 six==1.10.0
 swagger-spec-validator==2.1.0
 typing==3.6.2
-Werkzeug==0.12.2
+Werkzeug==0.15.3
 jsonschema==2.6.0
 elasticsearch==7.5.1
